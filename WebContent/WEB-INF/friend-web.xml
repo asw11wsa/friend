@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:mybatis-spring="http://mybatis.org/schema/mybatis-spring"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://mybatis.org/schema/mybatis-spring http://mybatis.org/schema/mybatis-spring-1.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+	<context:component-scan base-package="com.friend.www"/>
+	<aop:aspectj-autoproxy/>
+	<mvc:annotation-driven/>
+	<mvc:resources location="/resources/" mapping="/resources/**"/>
+	
+	
+	<!-- DataSource 설정 및 MyBatis설정 -->
+	
+	<!-- DataSource : JNDI -->
+	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean">
+		<property name="jndiName" value="java:comp/env/jdbc/myoracle"/>
+	</bean>
+	
+	<!-- MyBatis -->
+	<bean id="factoryBean" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="configLocation" value="classpath:com/friend/www/config/config.xml" />
+		<property name="mapperLocations" value="classpath*:com/friend/www/mapper/*.xml"/>
+	</bean>
+	<bean id="ss" class="org.mybatis.spring.SqlSessionTemplate">
+		<constructor-arg ref="factoryBean" />
+	</bean>
+	
+	<!-- fileupload  CommonsMultipartResolver 추가해야 한다. common-fileupload.jar -->
+	<bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver"/>
+	
+	<!-- viewResolver InternalResourceViewResolver를 추가해야 한다.  -->
+	<bean id="viewResolver" class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<property name="prefix" value="/WEB-INF/views/" />
+		<property name="suffix" value=".jsp" />
+	</bean>
+</beans>
